@@ -1,10 +1,12 @@
 from __future__ import absolute_import
 
+SPIDER_FEED_PARTITIONS = 1
+SPIDER_LOG_PARTITIONS = 1
 
 BACKEND = 'frontera.contrib.backends.sqlalchemy.Distributed'
-SQLALCHEMYBACKEND_ENGINE = 'sqlite:///seeds.sqlite'
+SQLALCHEMYBACKEND_ENGINE = 'sqlite:///seeds.db'
 SQLALCHEMYBACKEND_ENGINE_ECHO = False
 SQLALCHEMYBACKEND_DROP_ALL_TABLES = False
 SQLALCHEMYBACKEND_CLEAR_CONTENT = False
 
-DELAY_ON_EMPTY = 20.0
+DELAY_ON_EMPTY = 10.0

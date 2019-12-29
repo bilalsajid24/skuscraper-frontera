@@ -10,17 +10,79 @@ from ..items import VansItem
 
 
 class Mixin:
-    allowed_domains = ["vans.fr"]
-    start_urls = ["http://www.vans.fr/"]
-
     retailer = "vans-fr"
     market = "FR"
 
     pagniation_req_url_t = "https://fsm-vfc.attraqt.com/zones-js.aspx?{0}"
 
 
-class VansParser(Mixin):
-    name = Mixin.retailer + "-parser"
+class VansCrawler(CrawlSpider, Mixin):
+    name = Mixin.retailer + "-crawler"
+    listings_css = [".topnav-main-item"]
+    product_css = [".product-block-figure"]
+    deny_re = [".html"]
+    PAGE_SIZE = 48
+
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "skuscraper.pipelines.NormalizePricePipeline": 300
+        }
+    }
+    #
+    rules = (
+        Rule(LinkExtractor(restrict_css=listings_css, deny=deny_re), callback="parse_pagination"),
+    )
+
+    def category_zones(self, response):
+        css = ".body-container div::attr(lmzone)"
+        return response.css(css).extract()
+
+    def site_id(self, response):
+        script_re = "WCS_CONFIG.ATTRAQT = (.+?);"
+        raw_site_id = json.loads(re.findall(script_re, response.body.decode("utf-8").replace("\n", ""))[0])
+        return re.findall("zones/(.*).min", raw_site_id["MAINJS"])[0]
+
+    def config_categorytree(self, response):
+        return re.findall('categorytree : "(.*)"', response.body.decode("utf-8"))[0]
+
+    def config_language(self, response):
+        css = "meta[name='locale']::attr(content)"
+        return response.css(css).extract_first()
+
+    def parse(self, response):
+        pages = self.page_count(response)
+        cat_zones = self.category_zones(response)
+        lang = self.config_language(response)
+
+        parameters = {
+            "zone0": cat_zones[0], "zone1": cat_zones[1], "mergehash": "true",
+            "config_categorytree": self.config_categorytree(response),
+            "siteId": self.site_id(response), "config_language": lang,
+            "language": lang, "config_country": self.market}
+
+        for page in range(0, pages + self.PAGE_SIZE, self.PAGE_SIZE):
+            parameters["pageurl"] = f"{response.url}#esp_pg={page//self.PAGE_SIZE}"
+            url = self.pagniation_req_url_t.format(urlencode(parameters))
+
+            yield Request(url, callback=self.parse_raw_content, dont_filter=True)
+
+    def parse_raw_content(self, response):
+        script_re = "LM.buildZone\((.*)\)"
+        raw_html = json.loads(re.findall(script_re, response.body.decode("utf-8"))[0])
+        new_response = response.replace(body=raw_html["html"])
+
+        return [Request(url, callback=self.parse_product) for url in self.product_urls(new_response)]
+
+    def product_urls(self, response):
+        css = ".product-block-pdp-url::attr(href)"
+        urls = response.css(css).extract()
+        return [f"https://www.vans.fr/{url}" for url in urls]
+
+    def page_count(self, response):
+        css = ".header-result-counter ::text"
+        return int(response.css(css).re_first("\d+") or '0')
+
+    # Parser
 
     def parse_product(self, response):
         item = VansItem()
@@ -38,11 +100,10 @@ class VansParser(Mixin):
         item["date"] = datetime.now().strftime("%Y-%m-%d")
         item["crawl_start_time"] = datetime.now().isoformat()
         item["url_orignal"] = response.url
-        item["skus"] = []
-        item["image_urls"] = []
-        item["meta"] = {"requests": self.color_requests(response, item)}
+        item["skus"] = self.skus(response)
+        item["image_urls"] = self.image_urls(response)
 
-        return self.next_request_or_item(item)
+        return [item] + self.color_requests(response)
 
     def skus(self, response):
         color_css = ".attr-selected-color-js::text"
@@ -58,16 +119,6 @@ class VansParser(Mixin):
             skus.append(sku)
 
         return skus
-
-    def next_request_or_item(self, item):
-        color_requests = item["meta"]["requests"]
-        yield (color_requests and color_requests.pop(0)) or item
-
-    def parse_colors(self, response):
-        item = response.meta["item"]
-        item["skus"] += self.skus(response)
-        item["image_urls"] += self.image_urls(response)
-        return self.next_request_or_item(item)
 
     def product_id(self, response):
         css = ".step-container::attr(data-product-id)"
@@ -135,74 +186,9 @@ class VansParser(Mixin):
         urls = response.css(css).extract()
         return [response.urljoin(url) for url in urls]
 
-    def color_requests(self, response, item):
+    def color_requests(self, response):
         urls = response.css("button img::attr(data-product-url)").extract()
-        return [Request(url, callback=self.parse_colors, meta={"item": item},
-                dont_filter=True) for url in urls]
+        return [Request(url, callback=self.parse_product) for url in urls]
 
     def clean(self, dirty_strs):
         return [re.sub(':\s+', ' ', text).strip() for text in dirty_strs.split(";")]
-
-
-class VansCrawler(CrawlSpider, Mixin):
-    name = Mixin.retailer + "-crawler"
-    parser = VansParser()
-    listings_css = [".topnav-main-item"]
-    product_css = [".product-block-figure"]
-    deny_re = [".html"]
-    PAGE_SIZE = 48
-
-    rules = (
-        Rule(LinkExtractor(restrict_css=listings_css, deny=deny_re), callback="parse_pagination"),)
-
-    def category_zones(self, response):
-        css = ".body-container div::attr(lmzone)"
-        return response.css(css).extract()
-
-    def site_id(self, response):
-        script_re = "WCS_CONFIG.ATTRAQT = (.+?);"
-        raw_site_id = json.loads(re.findall(script_re, response.body.decode("utf-8").replace("\n", ""))[0])
-        return re.findall("zones/(.*).min", raw_site_id["MAINJS"])[0]
-
-    def config_categorytree(self, response):
-        return re.findall('categorytree : "(.*)"', response.body.decode("utf-8"))[0]
-
-    def config_language(self, response):
-        css = "meta[name='locale']::attr(content)"
-        return response.css(css).extract_first()
-
-    def parse_pagination(self, response):
-        pages = self.page_count(response)
-        cat_zones = self.category_zones(response)
-        lang = self.config_language(response)
-
-        parameters = {
-            "zone0": cat_zones[0], "zone1": cat_zones[1], "mergehash": "true",
-            "config_categorytree": self.config_categorytree(response),
-            "siteId": self.site_id(response), "config_language": lang,
-            "language": lang, "config_country": self.market}
-
-        for page in range(0, pages + self.PAGE_SIZE, self.PAGE_SIZE):
-            parameters["pageurl"] = f"{response.url}#esp_pg={page//self.PAGE_SIZE}"
-            url = self.pagniation_req_url_t.format(urlencode(parameters))
-
-            yield Request(url, callback=self.parse_raw_content, dont_filter=True)
-
-    def parse_raw_content(self, response):
-        script_re = "LM.buildZone\((.*)\)"
-        raw_html = json.loads(re.findall(script_re, response.body.decode("utf-8"))[0])
-        new_response = response.replace(body=raw_html["html"])
-
-        return [Request(url, callback=self.parse_item) for url in self.product_urls(new_response)]
-
-    def parse_item(self, response):
-        return self.parser.parse_product(response)
-
-    def product_urls(self, response):
-        css = ".product-block-pdp-url::attr(href)"
-        urls = response.css(css).extract()
-        return [f"{self.start_urls[0]}{url}" for url in urls]
-
-    def page_count(self, response):
-        css = ".header-result-counter ::text"
-        return int(response.css(css).re_first("\d+") or '0')

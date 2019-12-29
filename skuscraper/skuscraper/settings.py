@@ -5,9 +5,7 @@ BOT_NAME = 'skuscraper'
 SPIDER_MODULES = ['skuscraper.spiders']
 NEWSPIDER_MODULE = 'skuscraper.spiders'
 
-
-# Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'Frontera-based example bot (+https://github.com/scrapinghub/frontera)'
+USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)'
 
 SPIDER_MIDDLEWARES = {
     'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 1000,
@@ -18,6 +16,8 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
+
+ITEM_PIPELINES = {}
 
 
 HTTPCACHE_ENABLED = False
@@ -37,7 +37,7 @@ RANDOMIZE_DOWNLOAD_DELAY = False
 # concurrency
 CONCURRENT_REQUESTS = 64
 CONCURRENT_REQUESTS_PER_DOMAIN = 10
-DOWNLOAD_DELAY = 0.0
+DOWNLOAD_DELAY = 2
 
 # LOG_LEVEL = 'INFO'
 

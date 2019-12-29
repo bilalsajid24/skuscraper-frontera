@@ -1,11 +1,14 @@
-from scrapy.spiders import Spider, Request
+from scrapy.spiders import Spider, Rule
+from scrapy.linkextractors import LinkExtractor
 from ..items import HackerNewsItem
 
 
 class HackernewsSpider(Spider):
     name = 'hackernews'
-    allowed_domains = ['news.ycombinator.com']
-    start_urls = ['https://news.ycombinator.com/']
+
+    rules = (
+        Rule(LinkExtractor(restrict_css=['.morelink']), callback='parse'),
+    )
 
     def parse(self, response):
         for item_s in response.css('.itemlist .athing'):
@@ -14,11 +17,3 @@ class HackernewsSpider(Spider):
             item['title'] = item_s.css('.storylink::text').get()
             item['item_id'] = item_s.css('::attr(id)').get()
             yield item
-
-        next_url = response.css('[rel="next"]::attr(href)')
-
-        if not next_url:
-            yield None
-
-        next_url = response.urljoin(next_url.get())
-        yield Request(next_url, callback=self.parse)
