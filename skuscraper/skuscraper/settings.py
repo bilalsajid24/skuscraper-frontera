@@ -1,14 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# Scrapy settings for skuscraper project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://docs.scrapy.org/en/latest/topics/settings.html
-#     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-
 BOT_NAME = 'skuscraper'
 
 SPIDER_MODULES = ['skuscraper.spiders']
@@ -16,75 +7,41 @@ NEWSPIDER_MODULE = 'skuscraper.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'skuscraper (+http://www.yourdomain.com)'
+USER_AGENT = 'Frontera-based example bot (+https://github.com/scrapinghub/frontera)'
 
-# Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+SPIDER_MIDDLEWARES = {
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 1000,
+}
 
-# Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+DOWNLOADER_MIDDLEWARES = {
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 1000,
+}
 
-# Configure a delay for requests for the same website (default: 0)
-# See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
-# See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
-# The download delay setting will honor only one of:
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
 
-# Disable cookies (enabled by default)
-#COOKIES_ENABLED = False
 
-# Disable Telnet Console (enabled by default)
-#TELNETCONSOLE_ENABLED = False
+HTTPCACHE_ENABLED = False
+REDIRECT_ENABLED = True
+COOKIES_ENABLED = False
+DOWNLOAD_TIMEOUT = 240
+RETRY_ENABLED = False
+DOWNLOAD_MAXSIZE = 1*1024*1024
 
-# Override the default request headers:
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+# auto throttling
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_DEBUG = False
+AUTOTHROTTLE_MAX_DELAY = 3.0
+AUTOTHROTTLE_START_DELAY = 0.25
+RANDOMIZE_DOWNLOAD_DELAY = False
 
-# Enable or disable spider middlewares
-# See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'skuscraper.middlewares.SkuscraperSpiderMiddleware': 543,
-#}
+# concurrency
+CONCURRENT_REQUESTS = 64
+CONCURRENT_REQUESTS_PER_DOMAIN = 10
+DOWNLOAD_DELAY = 0.0
 
-# Enable or disable downloader middlewares
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'skuscraper.middlewares.SkuscraperDownloaderMiddleware': 543,
-#}
+# LOG_LEVEL = 'INFO'
 
-# Enable or disable extensions
-# See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'skuscraper.pipelines.SkuscraperPipeline': 300,
-#}
-
-# Enable and configure the AutoThrottle extension (disabled by default)
-# See https://docs.scrapy.org/en/latest/topics/autothrottle.html
-#AUTOTHROTTLE_ENABLED = True
-# The initial download delay
-#AUTOTHROTTLE_START_DELAY = 5
-# The maximum download delay to be set in case of high latencies
-#AUTOTHROTTLE_MAX_DELAY = 60
-# The average number of requests Scrapy should be sending in parallel to
-# each remote server
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-# Enable showing throttling stats for every response received:
-#AUTOTHROTTLE_DEBUG = False
-
-# Enable and configure HTTP caching (disabled by default)
-# See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+REACTOR_THREADPOOL_MAXSIZE = 32
+DNS_TIMEOUT = 180
+FRONTERA_SETTINGS = 'skuscraper.frontera.settings'
+HTTPERROR_ALLOW_ALL = True
