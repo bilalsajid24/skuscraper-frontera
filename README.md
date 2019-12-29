@@ -8,3 +8,5 @@ Distributed crawling for long running crawlers
 2) Run `python -m frontera.utils.add_seeds --config skuscraper.frontera.settings --seeds-file vans_seed_urls.txt`
 
 3) Start the crawl `scrapy crawl vans-fr-crawler`
+
+# Distributed
