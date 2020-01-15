@@ -5,10 +5,14 @@ BOT_NAME = 'skuscraper'
 SPIDER_MODULES = ['skuscraper.spiders']
 NEWSPIDER_MODULE = 'skuscraper.spiders'
 
-USER_AGENT = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; Trident/6.0)'
+USER_AGENT = 'Frontera-based example bot (+https://github.com/scrapinghub/frontera)'
 
 SPIDER_MIDDLEWARES = {
     'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 1000,
+    'scrapy.spidermiddleware.depth.DepthMiddleware': None,
+    'scrapy.spidermiddleware.offsite.OffsiteMiddleware': None,
+    'scrapy.spidermiddleware.referer.RefererMiddleware': None,
+    'scrapy.spidermiddleware.urllength.UrlLengthMiddleware': None
 }
 
 DOWNLOADER_MIDDLEWARES = {
@@ -16,8 +20,6 @@ DOWNLOADER_MIDDLEWARES = {
 }
 
 SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
-
-ITEM_PIPELINES = {}
 
 
 HTTPCACHE_ENABLED = False
@@ -37,11 +39,12 @@ RANDOMIZE_DOWNLOAD_DELAY = False
 # concurrency
 CONCURRENT_REQUESTS = 64
 CONCURRENT_REQUESTS_PER_DOMAIN = 10
-DOWNLOAD_DELAY = 2
+DOWNLOAD_DELAY = 0.0
 
-# LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'DEBUG'
 
 REACTOR_THREADPOOL_MAXSIZE = 32
 DNS_TIMEOUT = 180
-FRONTERA_SETTINGS = 'skuscraper.frontera.settings'
+# For single process set this to 'config.single'
+FRONTERA_SETTINGS = 'config.spider'
 HTTPERROR_ALLOW_ALL = True
