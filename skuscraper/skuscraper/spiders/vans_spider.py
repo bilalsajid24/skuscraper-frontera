@@ -28,7 +28,7 @@ class VansCrawler(CrawlSpider, Mixin):
             "skuscraper.pipelines.NormalizePricePipeline": 300
         }
     }
-    #
+
     rules = (
         Rule(LinkExtractor(restrict_css=listings_css, deny=deny_re), callback="parse_pagination"),
     )
@@ -49,7 +49,7 @@ class VansCrawler(CrawlSpider, Mixin):
         css = "meta[name='locale']::attr(content)"
         return response.css(css).extract_first()
 
-    def parse(self, response):
+    def parse_pagination(self, response):
         pages = self.page_count(response)
         cat_zones = self.category_zones(response)
         lang = self.config_language(response)
