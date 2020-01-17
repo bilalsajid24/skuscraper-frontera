@@ -38,14 +38,14 @@ Distributed crawling for long running crawlers
 
 3) Start zookeeper, kafka and hbase
 - `/usr/local/bin/start-hbase.sh`
-- `zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties` (Make sure to start zookeeper server first)
-- `kafka-server-start /usr/local/etc/kafka/server.properties`
-- `/usr/local/bin/hbase thrift start`
+- `zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties` -> localhost:2181 (Make sure to start zookeeper server first)
+- `kafka-server-start /usr/local/etc/kafka/server.properties` ->'localhost:9092'
+- `/usr/local/bin/hbase thrift start` -> 'localhost:9090'
 
 4) Create namespace in Hbase
 - `hbase shell`
 - `create_namespace 'crawler'`
-- `list_namespace`
+- Verify by command `list_namespace`
 
 5) Create Kafka topice
 - `kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic frontier-done`
@@ -55,7 +55,9 @@ Set the number of partitions equal to number of spider instances
 - `kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic frontier-score`
 
 6) Start DBW
--  `python -m frontera.worker.db --config cluster.dbw --no-incoming --partitions 0`
+- `python -m frontera.worker.db --config cluster.dbw --no-incoming --partitions 0`
+- Start next one dedicated to spider log processing
+`python -m frontera.worker.db --no-batches --config cluster.dbw` 
 
 7) Start SW (Upto N)
 - `python -m frontera.worker.strategy --config cluster.sw --partition-id 0`
