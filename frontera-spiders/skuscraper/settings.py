@@ -7,19 +7,31 @@ NEWSPIDER_MODULE = 'skuscraper.spiders'
 
 USER_AGENT = 'Frontera-based example bot (+https://github.com/scrapinghub/frontera)'
 
-SPIDER_MIDDLEWARES = {
-    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 1000,
-    'scrapy.spidermiddleware.depth.DepthMiddleware': None,
-    'scrapy.spidermiddleware.offsite.OffsiteMiddleware': None,
-    'scrapy.spidermiddleware.referer.RefererMiddleware': None,
-    'scrapy.spidermiddleware.urllength.UrlLengthMiddleware': None
-}
+''' Single Process and Distributed Settings '''
+# SPIDER_MIDDLEWARES = {
+#     'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 1000,
+#     'scrapy.spidermiddleware.depth.DepthMiddleware': None,
+#     'scrapy.spidermiddleware.offsite.OffsiteMiddleware': None,
+#     'scrapy.spidermiddleware.referer.RefererMiddleware': None,
+#     'scrapy.spidermiddleware.urllength.UrlLengthMiddleware': None
+# }
+#
+# DOWNLOADER_MIDDLEWARES = {
+#     'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 1000,
+# }
+#
+# SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
 
-DOWNLOADER_MIDDLEWARES = {
-    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 1000,
-}
-
+''' Clustering Settings '''
 SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
+
+SPIDER_MIDDLEWARES = {
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 999,
+    'frontera.contrib.scrapy.middlewares.seeds.file.FileSeedLoader': 1,
+}
+DOWNLOADER_MIDDLEWARES = {
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 999,
+}
 
 
 HTTPCACHE_ENABLED = False
@@ -45,6 +57,11 @@ LOG_LEVEL = 'DEBUG'
 
 REACTOR_THREADPOOL_MAXSIZE = 32
 DNS_TIMEOUT = 180
-# For single process set this to 'config.single'
-FRONTERA_SETTINGS = 'config.spider'
+
+'''
+For single process set this to 'config.single'
+For clustering set this to 'cluster.spider
+'''
+FRONTERA_SETTINGS = 'cluster.spider'
+
 HTTPERROR_ALLOW_ALL = True
