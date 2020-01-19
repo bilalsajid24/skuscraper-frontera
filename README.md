@@ -63,7 +63,7 @@ Set the number of partitions equal to number of spider instances
 - `python -m frontera.worker.strategy --config cluster.sw --partition-id 0`
 
 8) Add seed urls to DB
-- `python -m frontera.utils.add_seeds --config cluster.spider --seeds-file vans_seed_urls.txt`
+- `python -m frontera.utils.add_seeds --config cluster.dbw --seeds-file vans_seed_urls.txt`
 
 9) Start a single spider per spider feed partition (Upto N)
 - `scrapy crawl vans-fr-crawler -s SPIDER_PARTITION_ID=1`
