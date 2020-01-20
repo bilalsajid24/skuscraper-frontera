@@ -39,6 +39,7 @@ Distributed crawling for long running crawlers
 
 3) Start zookeeper, kafka and hbase
 - `/usr/local/bin/start-hbase.sh`
+- `hbase thrift start`
 - `zookeeper-server-start /usr/local/etc/kafka/zookeeper.properties` -> localhost:2181 (Make sure to start zookeeper server first)
 - `kafka-server-start /usr/local/etc/kafka/server.properties` ->'localhost:9092'
 - `/usr/local/bin/hbase thrift start` -> 'localhost:9090'
