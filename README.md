@@ -33,6 +33,7 @@ Distributed crawling for long running crawlers
 1) In `settings.py` set `FRONTERA_SETTINGS` to `cluster.spider`
 
 2) Install Kafka and Hbase
+- `brew cask install java` (Ignore this if already installed)
 - `brew install kafka`
 - `brew install hbase`
 
