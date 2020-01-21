@@ -24,7 +24,7 @@ Distributed crawling for long running crawlers
 
 4) Start stratrgey worker `python -m frontera.worker.strategy --config config.sw --partition-id 0`
 
-5) Start the crawl `scrapy crawl vans-fr-crawler`
+5) Start the crawl `scrapy crawl vans-fr-crawler -s SPIDER_PARTITION_ID=1`
 
 6) Start database worker `python -m frontera.worker.db --no-incoming --config config.dbw --partitions 0`
 
