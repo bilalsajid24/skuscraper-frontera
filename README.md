@@ -22,7 +22,7 @@ Distributed crawling for long running crawlers
 
 3) Run `python -m frontera.utils.add_seeds --config config.dbw --seeds-file vans_seed_urls.txt` to store urls in DB
 
-4) Start stratrgey worker `python -m frontera.worker.strategy --config config.sw`
+4) Start stratrgey worker `python -m frontera.worker.strategy --config config.sw --partition-id 0`
 
 5) Start the crawl `scrapy crawl vans-fr-crawler`
 
