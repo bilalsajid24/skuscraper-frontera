@@ -26,11 +26,10 @@ USER_AGENT = 'Frontera-based example bot (+https://github.com/scrapinghub/fronte
 SCHEDULER = 'frontera.contrib.scrapy.schedulers.frontier.FronteraScheduler'
 
 SPIDER_MIDDLEWARES = {
-    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 999,
-    'frontera.contrib.scrapy.middlewares.seeds.file.FileSeedLoader': 1,
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerSpiderMiddleware': 999
 }
 DOWNLOADER_MIDDLEWARES = {
-    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 999,
+    'frontera.contrib.scrapy.middlewares.schedulers.SchedulerDownloaderMiddleware': 999
 }
 
 
@@ -51,7 +50,7 @@ RANDOMIZE_DOWNLOAD_DELAY = False
 # concurrency
 CONCURRENT_REQUESTS = 64
 CONCURRENT_REQUESTS_PER_DOMAIN = 10
-DOWNLOAD_DELAY = 0.0
+DOWNLOAD_DELAY = 2
 
 LOG_LEVEL = 'DEBUG'
 

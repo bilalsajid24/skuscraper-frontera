@@ -18,4 +18,4 @@ MIDDLEWARES.extend([
     'frontera.contrib.middlewares.fingerprint.DomainFingerprintMiddleware'
 ])
 
-LOGGING_CONFIG='logging.conf'
+LOGGING_CONFIG = 'logging.conf'
