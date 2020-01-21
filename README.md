@@ -56,6 +56,11 @@ Set the number of partitions equal to number of strategy worker instances
 Set the number of partitions equal to number of spider instances
 - `kafka-topics --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic frontier-score`
 
+To see the consumed messages:
+- `kafka-console-consumer --bootstrap-server localhost:9092 --topic frontier-done --from-beginning`
+- `kafka-console-consumer --bootstrap-server localhost:9092 --topic frontier-todo --from-beginning`
+- `kafka-console-consumer --bootstrap-server localhost:9092 --topic frontier-score --from-beginning`
+
 6) Start DBW
 - `python -m frontera.worker.db --config cluster.dbw --no-incoming --partitions 0`
 - Start next one dedicated to spider log processing
